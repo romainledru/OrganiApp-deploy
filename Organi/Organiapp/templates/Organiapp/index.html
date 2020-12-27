@@ -1,0 +1,22 @@
+{% extends 'Organiapp/base.html' %}
+
+{% block content %}
+<body>
+	<h2>OrganiApp</h2>
+	<form action="{% url 'Organiapp:index' %}" method="POST">
+    {% csrf_token %}
+	<ul>
+	{% for list in lists %}
+		<li>
+			<a href={% url 'Organiapp:detail' list_id=list.id %} value="list.id"><h3 class="listFamily" id="listFamily">{{list.name}}</h3></a>
+			<span><button type="submit" value="{{list.id}}" name="delete_task"><i id="delete" class="fa fa-times-circle-o" aria-hidden="true"></i></button></span>
+		</li>
+	{% endfor %}
+	</ul>
+	<div class="search-box">
+		<input class="search-txt" type="text" name="add_task" placeholder="Typ here your new LIST ...">
+		
+	</div>
+	</form>
+</body>
+{% endblock content %}
