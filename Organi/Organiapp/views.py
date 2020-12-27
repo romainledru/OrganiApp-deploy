@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from .forms import inputItem, ParagraphErrorList
+import datetime
 
 # Create your views here.
 from .models import List, Item
@@ -36,7 +38,14 @@ def indexView(request):
 
 def detailView(request, list_id):
     if request.method == 'POST':
-        typped = request.POST.get('add_task')
+        print(request.POST)
+
+        typped = ''
+        
+        form = inputItem(request.POST, error_class=ParagraphErrorList)
+        if form.is_valid():
+            typped = form.cleaned_data['name']
+            date = form.cleaned_data['date_limit']
         valid = request.POST.get('valid_task')
         delete = request.POST.get('delete_task')
 
@@ -44,6 +53,7 @@ def detailView(request, list_id):
             new_entry = Item(
                 name=typped,
                 list_host_id=list_id,
+                date_limit=date
             )
             new_entry.save()
         
@@ -58,12 +68,26 @@ def detailView(request, list_id):
             task = Item.objects.filter(id=delete)
             task.delete()
 
-    print(request.POST)
-    items = Item.objects.filter(list_host_id=list_id)
+    items = Item.objects.filter(list_host_id=list_id).order_by('date_limit')
     listCurrent = List.objects.filter(id=list_id).first()
+    form = inputItem()
+
+    urgent_validate = []
+    dateCurrent = datetime.date.today()
+    for i in range(len(items)):
+        if items[i].date_limit is not None:
+            if items[i].date_limit < dateCurrent:
+                urgent_validate.append(1)
+            else:
+                urgent_validate.append(0)
+        else:
+            urgent_validate.append(0)
+    
     context = {
         'listCurrent': listCurrent,
         'items': items,
+        'form': form,
+        'urgent_validate': urgent_validate,
     }
     return render(request, 'Organiapp/detail.html', context)
 

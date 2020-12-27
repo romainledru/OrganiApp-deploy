@@ -9,17 +9,36 @@
 		<a href={% url 'Organiapp:index' %}><h3 class="listFamily">{{listCurrent.name}}</h3></a>
 		{% for item in items %}
 		<li>
-			<span class="number">{{item.id}}</span>
+			<span class="number">{{item.date_limit}}</span>
 			<span class="name">{{item.name}}</span>
 			<span class="valid_btn"><button type="submit" value="{{item.id}}" name="valid_task"><i id="valid" class="fa fa-check-circle-o" aria-hidden="true"></i></button></span>
 			<span class="delete_btn"><button type="submit" value="{{item.id}}" name="delete_task"><i id="delete" class="fa fa-times-circle-o" aria-hidden="true"></i></button></span>
 		</li>
 		{% endfor %}
 	</ul>
+	</form>
+	<form action="{% url 'Organiapp:detail' list_id=listCurrent.id %}" method="POST">
+	{% csrf_token %}
+	<h4>{{form.date_limit}}</h4>
 	<div class="search-box">
-		<input class="search-txt" type="text" name="add_task" placeholder="Typ here your new TASK ...">
-		
+		{{form.name}}
+		<input type="submit" class="search-btn" value="GO">
 	</div>
 	</form>
+
+	<script type="text/javascript">
+
+		var form = document.querySelectorAll('[class="number"]');
+		for (var i = 0; i < form.length; i++) {
+			if ({{urgent_validate}}[i] == 1){
+				form[i].style.backgroundColor = "red"
+				form[i].style.borderRadius = "10px"
+			}
+			if (form[i].innerHTML == "None"){
+				form[i].innerHTML = ''
+			}
+		}
+	</script>
+
 </body>
 {% endblock content %}
